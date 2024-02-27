@@ -1,8 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sizzle_starter/src/core/components/rest_client/rest_client.dart';
+import 'package:sizzle_starter/src/core/components/rest_client/src/rest_client_dio.dart';
 import 'package:sizzle_starter/src/core/utils/logger.dart';
 import 'package:sizzle_starter/src/feature/app/logic/tracking_manager.dart';
 import 'package:sizzle_starter/src/feature/initialization/model/dependencies.dart';
 import 'package:sizzle_starter/src/feature/initialization/model/environment_store.dart';
+import 'package:sizzle_starter/src/feature/search/data/search_api_provider.dart';
+import 'package:sizzle_starter/src/feature/search/data/search_repo.dart';
 import 'package:sizzle_starter/src/feature/settings/bloc/settings_bloc.dart';
 import 'package:sizzle_starter/src/feature/settings/data/locale_datasource.dart';
 import 'package:sizzle_starter/src/feature/settings/data/locale_repository.dart';
@@ -31,9 +36,21 @@ final class InitializationProcessor {
 
     final settingsBloc = await _initSettingsBloc(sharedPreferences);
 
+    final dio = Dio();
+    final RestClient restClient = RestClientDio(
+      baseUrl: 'https://swapi.dev/',
+      dio: dio,
+    );
+    final ISearchProvider searchProvider = SearchProviderImpl(restClient);
+    final ISearchRepository searchRepository = SearchRepositoryImpl(
+      scheduleBusProvider: searchProvider,
+    );
+
     return Dependencies(
       sharedPreferences: sharedPreferences,
       settingsBloc: settingsBloc,
+      restClient: restClient,
+      searchRepository: searchRepository,
     );
   }
 

@@ -2,16 +2,9 @@ part of 'search_bloc.dart';
 
 /// Business Logic Component SearchEvent Events
 @freezed
-class SearchEventEvent with _$SearchEventEvent {
-  const SearchEventEvent._();
-
-
+class SearchEvent with _$SearchEvent {
+  const SearchEvent._();
 
   /// Fetch
-  const factory SearchEventEvent.fetch({required String name id}) = FetchSearchEventEvent;
-
-
-
-
-
+  const factory SearchEvent.fetch({required String name}) = FetchSearchEvent;
 }

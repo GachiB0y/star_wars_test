@@ -30,10 +30,7 @@ class MaterialContext extends StatelessWidget {
       supportedLocales: Localization.supportedLocales,
       locale: locale,
       home: const HomeScreen(),
-      // TODO: You may want to override the default text scaling behavior.
-      builder: (context, child) => MediaQuery.withClampedTextScaling(
-        minScaleFactor: 1.0,
-        maxScaleFactor: 2.0,
+      builder: (context, child) => MediaQuery.withNoTextScaling(
         child: child!,
       ),
     );

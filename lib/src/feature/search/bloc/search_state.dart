@@ -1,5 +1,4 @@
-import 'package:meta/meta.dart';
-import 'package:sizzle_starter/src/feature/search/model/entity.dart';
+part of 'search_bloc.dart';
 
 /// {@template search_state_placeholder}
 /// Entity placeholder for SearchState
@@ -10,9 +9,9 @@ typedef SearchEntity = SearchModel;
 /// SearchState.
 /// {@endtemplate}
 sealed class SearchState extends _$SearchStateBase {
-
   /// {@macro search_state}
   const SearchState({required super.data, required super.message});
+
   /// Idling state
   /// {@macro search_state}
   const factory SearchState.idle({
@@ -53,21 +52,30 @@ final class SearchState$Idle extends SearchState with _$SearchState {
 /// {@nodoc}
 final class SearchState$Processing extends SearchState with _$SearchState {
   /// {@nodoc}
-  const SearchState$Processing({required super.data, super.message = 'Processing'});
+  const SearchState$Processing({
+    required super.data,
+    super.message = 'Processing',
+  });
 }
 
 /// Successful
 /// {@nodoc}
 final class SearchState$Successful extends SearchState with _$SearchState {
   /// {@nodoc}
-  const SearchState$Successful({required super.data, super.message = 'Successful'});
+  const SearchState$Successful({
+    required super.data,
+    super.message = 'Successful',
+  });
 }
 
 /// Error
 /// {@nodoc}
 final class SearchState$Error extends SearchState with _$SearchState {
   /// {@nodoc}
-  const SearchState$Error({required super.data, super.message = 'An error has occurred.'});
+  const SearchState$Error({
+    required super.data,
+    super.message = 'An error has occurred.',
+  });
 }
 
 /// {@nodoc}
@@ -97,7 +105,8 @@ abstract base class _$SearchStateBase {
   bool get hasError => maybeMap<bool>(orElse: () => false, error: (_) => true);
 
   /// Is in progress state?
-  bool get isProcessing => maybeMap<bool>(orElse: () => false, processing: (_) => true);
+  bool get isProcessing =>
+      maybeMap<bool>(orElse: () => false, processing: (_) => true);
 
   /// Is in idle state?
   bool get isIdling => !isProcessing;
@@ -119,7 +128,8 @@ abstract base class _$SearchStateBase {
 
   /// Pattern matching for [SearchState].
   R maybeMap<R>({
-    required R Function() orElse, SearchStateMatch<R, SearchState$Idle>? idle,
+    required R Function() orElse,
+    SearchStateMatch<R, SearchState$Idle>? idle,
     SearchStateMatch<R, SearchState$Processing>? processing,
     SearchStateMatch<R, SearchState$Successful>? successful,
     SearchStateMatch<R, SearchState$Error>? error,

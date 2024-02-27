@@ -1,70 +1,222 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizzle_starter/src/core/localization/localization.dart';
+import 'package:sizzle_starter/src/feature/initialization/widget/dependencies_scope.dart';
+import 'package:sizzle_starter/src/feature/search/bloc/search_bloc.dart';
+import 'package:sizzle_starter/src/feature/search/model/entity.dart';
 import 'package:sizzle_starter/src/feature/settings/widget/settings_scope.dart';
 
 /// {@template sample_page}
 /// SamplePage widget
 /// {@endtemplate}
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   /// {@macro sample_page}
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  Timer? searchDebounce;
+
+  late final SearchBLoC searchBLoC;
+
+  @override
+  void initState() {
+    super.initState();
+    searchBLoC = SearchBLoC(
+      repository: DependenciesScope.of(context).searchRepository,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) => Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
-        body: CustomScrollView(
-          slivers: [
-            SliverAppBar(title: Text(Localization.of(context).appTitle)),
-            SliverList(
-              delegate: SliverChildListDelegate.fixed([
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    Localization.of(context).locales,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onBackground,
-                        ),
-                  ),
-                ),
-                _LanguagesSelector(Localization.supportedLocales),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    Localization.of(context).default_themes,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onBackground,
-                        ),
-                  ),
-                ),
-                const _ThemeSelector(Colors.primaries),
-                Padding(
-                  padding: const EdgeInsets.only(left: 8, top: 8),
-                  child: Text(
-                    Localization.of(context).custom_colors,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onBackground,
-                        ),
-                  ),
-                ),
-                const _ThemeSelector(Colors.accents),
-              ]),
-            ),
-            SliverToBoxAdapter(
-              child: Center(
-                child: SizedBox(
-                  height: 100,
-                  width: 100,
-                  child: Card(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    margin: const EdgeInsets.all(8),
+        body: SafeArea(
+          child:
+
+              // Column(
+              //   children: <Widget>[
+              //     Padding(
+              //       padding: const EdgeInsets.all(25.0),
+              //       child: Center(
+              //         child: SizedBox(
+              //           height: 100,
+              //           child: TextField(
+              //             onChanged: (value) {
+              //               if (value.isNotEmpty && value.length > 2) {
+              //                 searchDebounce?.cancel();
+              //                 searchDebounce =
+              //                     Timer(const Duration(milliseconds: 500), () {
+              //                   searchBLoC.add(SearchEvent.fetch(name: value));
+              //                   print(value);
+              //                 });
+              //               }
+              //             },
+              //           ),
+              //         ),
+              //       ),
+              //     ),
+              //     BlocBuilder<SearchBLoC, SearchState>(
+              //       bloc: searchBLoC,
+              //       builder: (context, state) {
+              //         if (state is SearchState$Error) {
+              //           return Center(child: Text(state.message));
+              //         } else {
+              //           return Expanded(
+              //             child: ListView.builder(
+              //               itemCount: state.data!.combinedData.length,
+              //               itemBuilder: (context, index) {
+              //                 final dataSingle = state.data!.combinedData[index];
+
+              //                 return Padding(
+              //                   padding: const EdgeInsets.all(8.0),
+              //                   child: Column(
+              //                     mainAxisSize: MainAxisSize.min,
+              //                     children: [
+              //                       Text(dataSingle.name!),
+              //                       Text(
+              //                         dataSingle.gender ?? dataSingle.manufacturer!,
+              //                       ),
+              //                       SizedBox(
+              //                         height: 150,
+              //                         child: ListView.builder(
+              //                           scrollDirection: Axis.horizontal,
+              //                           // itemExtent: 30.0,
+              //                           itemCount: dataSingle.pilots == null
+              //                               ? dataSingle.starships!.length
+              //                               : dataSingle.pilots!.length,
+              //                           itemBuilder: (context, index) {
+              //                             late final List<String>? items;
+              //                             if (dataSingle.pilots == null) {
+              //                               items = dataSingle.starships;
+              //                             } else {
+              //                               items = dataSingle.pilots;
+              //                             }
+              //                             return SizedBox(
+              //                               height: 30.0,
+              //                               child: Text(items![index]),
+              //                             );
+              //                           },
+              //                         ),
+              //                       ),
+              //                     ],
+              //                   ),
+              //                 );
+              //               },
+              //             ),
+              //           );
+              //         }
+              //       },
+              //     ),
+              //   ],
+              // ),
+              CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.all(25.0),
+                  child: Center(
+                    child: SizedBox(
+                      height: 100,
+                      child: TextField(
+                        onChanged: (value) {
+                          if (value.isNotEmpty && value.length > 2) {
+                            searchDebounce?.cancel();
+                            searchDebounce =
+                                Timer(const Duration(milliseconds: 500), () {
+                              searchBLoC.add(SearchEvent.fetch(name: value));
+                              print(value);
+                            });
+                          }
+                        },
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+              BlocBuilder<SearchBLoC, SearchState>(
+                bloc: searchBLoC,
+                builder: (context, state) {
+                  if (state is SearchState$Error) {
+                    return SliverToBoxAdapter(
+                      child: Center(child: Text(state.message)),
+                    );
+                  } else if (state is SearchState$Processing) {
+                    return const SliverToBoxAdapter(
+                      child:
+                          Center(child: CircularProgressIndicator.adaptive()),
+                    );
+                  } else {
+                    return SliverList(
+                      delegate: SliverChildListDelegate.fixed([
+                        SizedBox(
+                          height: 100,
+                          child: ListView.builder(
+                            itemCount: state.data!.combinedData.length,
+                            itemBuilder: (context, index) {
+                              final dataSingle =
+                                  state.data!.combinedData[index];
+
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(dataSingle.name!),
+                                    Text(
+                                      dataSingle.gender ??
+                                          dataSingle.manufacturer!,
+                                    ),
+                                    SizedBox(
+                                      height: 150,
+                                      child: ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        // itemExtent: 30.0,
+                                        itemCount: dataSingle.pilots == null
+                                            ? dataSingle.starships!.length
+                                            : dataSingle.pilots!.length,
+                                        itemBuilder: (context, index) {
+                                          late final List<Object>? items;
+                                          if (dataSingle.pilots == null) {
+                                            items = dataSingle.starships;
+                                            return SizedBox(
+                                              height: 30.0,
+                                              child: Text(
+                                                (items! as List<StarShip>)[
+                                                        index]
+                                                    .name,
+                                              ),
+                                            );
+                                          } else {
+                                            items = dataSingle.pilots;
+                                            return SizedBox(
+                                              height: 30.0,
+                                              child: Text(
+                                                (items! as List<People>)[index]
+                                                    .name,
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ]),
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       );
 }
@@ -130,9 +282,8 @@ class _ThemeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        height: 100,
+        height: 30.0,
         child: ListView.builder(
-          scrollDirection: Axis.horizontal,
           itemCount: _colors.length,
           itemBuilder: (context, index) {
             final color = _colors.elementAt(index);
