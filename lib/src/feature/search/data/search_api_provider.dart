@@ -33,37 +33,40 @@ class SearchProviderImpl implements ISearchProvider {
         }
       }
 
-      final Iterable<People> result = await Future.wait(
-        data.map<Future<People>>((item) async {
-          final coolletionItemLink = item['starships'] as List<dynamic>;
-          late final Iterable<StarShip> starships;
-          if (coolletionItemLink.isEmpty) {
-            starships = [];
-          } else {
-            starships = await Future.wait(
-              coolletionItemLink.map((url) async {
-                final response =
-                    await _httpService.get(url.substring(18) as String);
+      final Iterable<People> result =
+          data.map((item) => People.fromJson(item as Map<String, dynamic>));
 
-                if (response case {'name': final data as String}) {
-                  return StarShip(
-                    pilots: [],
-                    name: response['name']! as String,
-                    manufacturer: response['manufacturer']! as String,
-                  );
-                }
-                throw Exception('Error fetching get list starship');
-              }),
-            );
-          }
+      // final Iterable<People> result = await Future.wait(
+      //   data.map<Future<People>>((item) async {
+      //     final coolletionItemLink = item['starships'] as List<dynamic>;
+      //     late final Iterable<StarShip> starships;
+      //     if (coolletionItemLink.isEmpty) {
+      //       starships = [];
+      //     } else {
+      //       starships = await Future.wait(
+      //         coolletionItemLink.map((url) async {
+      //           final response =
+      //               await _httpService.get(url.substring(18) as String);
 
-          return People(
-            name: item['name'] as String,
-            gender: item['gender'] as String,
-            starships: starships.toList(),
-          );
-        }),
-      );
+      //           if (response case {'name': final data as String}) {
+      //             return StarShip(
+      //               pilots: [],
+      //               name: response['name']! as String,
+      //               manufacturer: response['manufacturer']! as String,
+      //             );
+      //           }
+      //           throw Exception('Error fetching get list starship');
+      //         }),
+      //       );
+      //     }
+
+      //     return People(
+      //       name: item['name'] as String,
+      //       gender: item['gender'] as String,
+      //       starships: starships.toList(),
+      //     );
+      //   }),
+      // );
 
       return result;
     }
@@ -86,37 +89,41 @@ class SearchProviderImpl implements ISearchProvider {
         }
       }
 
-      final Iterable<StarShip> result = await Future.wait(
-        data.map<Future<StarShip>>((item) async {
-          final coolletionItemLink = item['pilots'] as List<dynamic>;
-          late final Iterable<People> pilots;
-          if (coolletionItemLink.isEmpty) {
-            pilots = [];
-          } else {
-            pilots = await Future.wait(
-              coolletionItemLink.map((url) async {
-                final response =
-                    await _httpService.get(url.substring(18) as String);
+      final Iterable<StarShip> result =
+          data.map((item) => StarShip.fromJson(item as Map<String, dynamic>));
 
-                if (response case {'name': final data as String}) {
-                  return People(
-                    starships: [],
-                    name: response['name']! as String,
-                    gender: response['gender']! as String,
-                  );
-                }
-                throw Exception('Error fetching get list starship');
-              }),
-            );
-          }
+      // final Iterable<StarShip> result = await Future.wait(
 
-          return StarShip(
-            name: item['name'] as String,
-            manufacturer: item['manufacturer'] as String,
-            pilots: pilots.toList(),
-          );
-        }),
-      );
+      //   data.map<Future<StarShip>>((item) async {
+      //     final coolletionItemLink = item['pilots'] as List<dynamic>;
+      //     late final Iterable<People> pilots;
+      //     if (coolletionItemLink.isEmpty) {
+      //       pilots = [];
+      //     } else {
+      //       pilots = await Future.wait(
+      //         coolletionItemLink.map((url) async {
+      //           final response =
+      //               await _httpService.get(url.substring(18) as String);
+
+      //           if (response case {'name': final data as String}) {
+      //             return People(
+      //               starships: [],
+      //               name: response['name']! as String,
+      //               gender: response['gender']! as String,
+      //             );
+      //           }
+      //           throw Exception('Error fetching get list starship');
+      //         }),
+      //       );
+      //     }
+
+      //     return StarShip(
+      //       name: item['name'] as String,
+      //       manufacturer: item['manufacturer'] as String,
+      //       pilots: pilots.toList(),
+      //     );
+      //   }),
+      // );
 
       // final List<StarShip> result = data
       //     .map((item) => StarShip.fromJson(item as Map<String, dynamic>))

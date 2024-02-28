@@ -2,11 +2,11 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'entity.freezed.dart';
 part 'entity.g.dart';
 
+typedef ProductID = String;
+
 @freezed
 class SearchModel with _$SearchModel {
   const factory SearchModel({
-    // required List<People> peoples,
-    // required List<StarShip> starships,
     required List<CombinedData> combinedData,
   }) = _SearchModel;
 
@@ -17,9 +17,9 @@ class SearchModel with _$SearchModel {
 @freezed
 class People with _$People {
   const factory People({
-    required String name,
+    required ProductID name,
     required String gender,
-    required List<StarShip> starships,
+    required List<String> starships,
     // required List<String> starshipsLink,
   }) = _People;
 
@@ -29,9 +29,9 @@ class People with _$People {
 @freezed
 class StarShip with _$StarShip {
   const factory StarShip({
-    required String name,
+    required ProductID name,
     required String manufacturer,
-    required List<People> pilots,
+    required String passengers,
     // required List<String> pilotsLink,
   }) = _StarShip;
 
@@ -42,11 +42,11 @@ class StarShip with _$StarShip {
 @freezed
 class CombinedData with _$CombinedData {
   const factory CombinedData({
-    required String? name,
+    required ProductID? name,
     required String? gender,
-    required List<StarShip>? starships,
+    required List<String>? starships,
     required String? manufacturer,
-    required List<People>? pilots,
+    required String? passengers,
   }) = _CombinedData;
   factory CombinedData.fromJson(Map<String, dynamic> json) =>
       _$CombinedDataFromJson(json);
@@ -60,6 +60,6 @@ class CombinedData with _$CombinedData {
         gender: people?.gender,
         starships: people?.starships,
         manufacturer: starship?.manufacturer,
-        pilots: starship?.pilots,
+        passengers: starship?.passengers,
       );
 }

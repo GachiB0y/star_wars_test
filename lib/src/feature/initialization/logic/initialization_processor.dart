@@ -44,6 +44,7 @@ final class InitializationProcessor {
     final ISearchProvider searchProvider = SearchProviderImpl(restClient);
     final ISearchRepository searchRepository = SearchRepositoryImpl(
       scheduleBusProvider: searchProvider,
+      sharedPreferences: sharedPreferences,
     );
 
     return Dependencies(
