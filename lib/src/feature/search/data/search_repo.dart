@@ -4,7 +4,10 @@ import 'package:sizzle_starter/src/feature/search/model/entity.dart';
 
 abstract interface class ISearchRepository {
   ///Метод для поиска
-  Future<SearchModel> serach({required String name});
+  Future<List<CombinedData>> serach({required String name});
+
+  ///Метод для поиска
+  Future<List<CombinedData>> serachToListName({required List<String> names});
 
   // Получение изранного
 
@@ -36,7 +39,7 @@ class SearchRepositoryImpl implements ISearchRepository {
   Set<ProductID>? _favoritesCache;
 
   @override
-  Future<SearchModel> serach({required String name}) async {
+  Future<List<CombinedData>> serach({required String name}) async {
     final Iterable<People> peoples =
         await _scheduleBusProvider.getPeople(name: name);
     final Iterable<StarShip> starships =
@@ -48,9 +51,7 @@ class SearchRepositoryImpl implements ISearchRepository {
     final Iterable<CombinedData> dataTwo = starships
         .map((starship) => CombinedData.fromPeopleAndStarship(null, starship));
     dataOne.addAll(dataTwo);
-    final SearchModel result = SearchModel(
-      combinedData: dataOne,
-    );
+    final List<CombinedData> result = dataOne;
 
     return result;
   }
@@ -90,5 +91,35 @@ class SearchRepositoryImpl implements ISearchRepository {
       _favoriteProductsKey,
       <String>[...set],
     );
+  }
+
+  @override
+  Future<List<CombinedData>> serachToListName({
+    required List<String> names,
+  }) async {
+    if (names.isEmpty) {
+      return [];
+    }
+    final List<CombinedData> data = [];
+
+    for (final element in names) {
+      final Iterable<People> peoples =
+          await _scheduleBusProvider.getPeople(name: element);
+
+      final Iterable<StarShip> starships =
+          await _scheduleBusProvider.getStarShip(name: element);
+      final Iterable<CombinedData> dataOne = peoples
+          .map((people) => CombinedData.fromPeopleAndStarship(people, null))
+          .toList();
+      final Iterable<CombinedData> dataTwo = starships.map(
+        (starship) => CombinedData.fromPeopleAndStarship(null, starship),
+      );
+      data.addAll(dataOne);
+
+      data.addAll(dataTwo);
+    }
+
+    final List<CombinedData> result = data;
+    return result;
   }
 }

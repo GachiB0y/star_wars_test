@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizzle_starter/src/feature/initialization/widget/dependencies_scope.dart';
 import 'package:sizzle_starter/src/feature/search/bloc/search_bloc/search_bloc.dart';
 import 'package:sizzle_starter/src/feature/search/widget/favorite_button.dart';
+import 'package:sizzle_starter/src/feature/search/widget/search_scope.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({
@@ -23,9 +24,13 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
-    searchBLoC = SearchBLoC(
-      repository: DependenciesScope.of(context).searchRepository,
-    );
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    searchBLoC = SearchScope.of(context).state.searchBLoC;
   }
 
   @override

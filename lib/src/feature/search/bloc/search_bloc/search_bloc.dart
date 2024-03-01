@@ -22,13 +22,14 @@ class SearchBLoC extends Bloc<SearchEvent, SearchState>
         super(
           initialState ??
               const SearchState.idle(
-                data: SearchEntity(combinedData: []),
+                data: SearchEntity(combinedData: [], favorites: []),
                 message: 'Initial idle state',
               ),
         ) {
     on<SearchEvent>(
       (event, emit) => event.map<Future<void>>(
         fetch: (event) => _fetch(event, emit),
+        fetchFavorite: (event) => _fetchFavorites(event, emit),
       ),
       transformer: bloc_concurrency.sequential(),
       //transformer: bloc_concurrency.restartable(),
@@ -43,8 +44,36 @@ class SearchBLoC extends Bloc<SearchEvent, SearchState>
   Future<void> _fetch(FetchSearchEvent event, Emitter<SearchState> emit) async {
     try {
       emit(SearchState.processing(data: state.data));
-      final newData = await _repository.serach(name: event.name);
-      emit(SearchState.successful(data: newData));
+      final List<CombinedData> newData =
+          await _repository.serach(name: event.name);
+      emit(
+        SearchState.successful(
+          data: state.data!.copyWith(combinedData: newData),
+        ),
+      );
+    } on Object catch (err, stackTrace) {
+      //l.e('An error occurred in the SearchBLoC: $err', stackTrace);
+      emit(SearchState.error(data: state.data));
+      rethrow;
+    } finally {
+      emit(SearchState.idle(data: state.data));
+    }
+  }
+
+  /// Fetch event handler
+  Future<void> _fetchFavorites(
+    FetchFavoriteSearchEvent event,
+    Emitter<SearchState> emit,
+  ) async {
+    try {
+      emit(SearchState.processing(data: state.data));
+      final List<CombinedData> newData =
+          await _repository.serachToListName(names: event.names);
+      emit(
+        SearchState.successful(
+          data: state.data!.copyWith(favorites: newData),
+        ),
+      );
     } on Object catch (err, stackTrace) {
       //l.e('An error occurred in the SearchBLoC: $err', stackTrace);
       emit(SearchState.error(data: state.data));

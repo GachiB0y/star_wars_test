@@ -7,4 +7,8 @@ class SearchEvent with _$SearchEvent {
 
   /// Fetch
   const factory SearchEvent.fetch({required String name}) = FetchSearchEvent;
+
+  /// FetchFavorite
+  const factory SearchEvent.fetchFavorite({required List<String> names}) =
+      FetchFavoriteSearchEvent;
 }

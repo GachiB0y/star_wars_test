@@ -8,6 +8,7 @@ typedef ProductID = String;
 class SearchModel with _$SearchModel {
   const factory SearchModel({
     required List<CombinedData> combinedData,
+    required List<CombinedData> favorites,
   }) = _SearchModel;
 
   factory SearchModel.fromJson(Map<String, dynamic> json) =>
